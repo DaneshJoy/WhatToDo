@@ -5,4 +5,4 @@ Personal ![NodeJS](https://img.shields.io/badge/node.js-6DA55F?style=for-the-bad
 - [WhatToDo.js](WhatToDo.js)
 - [WhatToDo.py](WhatToDo.py)
 
-<img src="WhatToDo.png" alt="WhatToDo.png" style="zoom:50%;" />
+<img src="WhatToDo.png" alt="WhatToDo.png" style="width:20%;" />
