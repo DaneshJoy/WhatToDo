@@ -1,4 +1,4 @@
 @ECHO OFF
 ECHO.
-python select_work.py
+python WhatToDo.py
 ECHO.

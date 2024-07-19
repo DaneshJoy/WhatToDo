@@ -54,8 +54,8 @@ print('\033[0m')
 
 # subprocess.Popen(r'D:\Tools\MyStopWatch\C#\MyStopWatch\bin\Release\net7.0-windows\MyStopWatch.exe')
 
-with open('log.txt', 'a') as f:
-    f.write(datetime.now().strftime("%c") + ', ' + result + '\n')
+with open('../log.txt', 'a') as f:
+    f.write(datetime.now().strftime("%Y-%m-%d %H:%M:%S") + ', ' + result + ', (py)\n')
 
 notification.notify(title=f">>{result}<<", message=f"Start working on '{result}' project",
                     app_name="MyWorks", timeout=7,
