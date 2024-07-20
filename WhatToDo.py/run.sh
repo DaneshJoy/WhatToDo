@@ -1,5 +1,5 @@
 #!/bin/bash
 echo
 echo
-python ./WhatToDo.py
+/home/saeed/anaconda3/bin/python ./WhatToDo.py
 echo

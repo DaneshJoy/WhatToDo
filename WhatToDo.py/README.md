@@ -9,3 +9,11 @@ A personal ![Python](https://img.shields.io/badge/python-3670A0?style=for-the-ba
 pip install plyer
 ```
 
+> [!NOTE]
+>
+> In Ubuntu, you might need to install dbus packages:
+>
+> ```shell
+> sudo apt install python-dbus-dev
+> pip install dbus-python
+> ```
