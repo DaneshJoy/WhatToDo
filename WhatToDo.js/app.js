@@ -2,20 +2,37 @@ const express = require('express');
 const fs = require('fs');
 const app = express();
 const port = 3000;
+const tasks_file = '../tasks.txt'
 
-let todoList = [
-  "Sarbazi",
-  "BrainXAI",
-  "Klassima",
-  "SurgiSight",
-  "VisioImpulse"];
 
 app.use(express.static('public'));
 app.use(express.json());
 
+// Function to read the file and create the todoList array
+function readTasksFromFile(filename) {
+  try {
+      // Read the file synchronously
+      const data = fs.readFileSync(filename, 'utf8');
+      // Split the file contents by new line to create an array
+      const tasks = data.split('\n').map(task => task.trim()).filter(task => task.length > 0);
+      return tasks;
+  } catch (err) {
+      console.error(`Error reading file ${filename}:`, err);
+      return [];
+  }
+}
+
+// Read tasks from tasks.txt and create the todoList array
+let todoList = readTasksFromFile(tasks_file);
+let works = [];
+// Multiply the list by 10
+for (let i = 0; i < 10; i++) {
+  works = works.concat(todoList);
+}
+
 app.get('/suggest', (req, res) => {
-  const randomIndex = Math.floor(Math.random() * todoList.length);
-  const suggestion = todoList[randomIndex];
+  const randomIndex = Math.floor(Math.random() * works.length);
+  const suggestion = works[randomIndex];
 
   // Format the current date and time and append item to log file
   import('dateformat')
@@ -46,7 +63,19 @@ app.get('/todos', (req, res) => {
 
 app.post('/update', (req, res) => {
   todoList = req.body.todoList;
-  res.json({ message: 'To-do list updated successfully!' });
+
+  // Join the array into a string with new lines and write to tasks.txt
+  const data = todoList.join('\n');
+
+  fs.writeFile(tasks_file, data, { flag: 'w+' }, err => {
+      if (err) {
+          console.error('Error writing to tasks.txt:', err);
+          return res.status(500).json({ message: 'Error updating the to-do list.' });
+      }
+
+      res.json({ message: 'To-do list updated successfully!' });
+  });
+
 });
 
 app.listen(port, () => {

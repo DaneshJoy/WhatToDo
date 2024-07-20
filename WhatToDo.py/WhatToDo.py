@@ -7,6 +7,25 @@ from datetime import datetime
 from plyer import notification
 
 
+tasks_file = '../tasks.txt'
+
+
+def read_tasks_from_file(filename):
+    try:
+        # Read the file contents
+        with open(filename, 'r', encoding='utf-8') as file:
+            data = file.read()
+        
+        # Split the contents by new line and process each line
+        tasks = [task.strip() for task in data.split('\n') if task.strip()]
+        return tasks
+    except Exception as e:
+        print(f"Error reading file {filename}: {e}")
+        return []
+
+
+todo_list = read_tasks_from_file(tasks_file)
+
 os.system('')
 print('\033[97;1m °•. Random Work Selection .•°')
 print('''\033[96;1m
@@ -27,7 +46,7 @@ print('''\033[96;1m
 
 
 w = ['|', '/', '—', '\\', '|', '—']
-works = ['Sarbazi', 'BrainXAI', 'Klassima', 'SurgiSight', 'VisioImpulse']*10
+works = todo_list * 10
 
 print('\033[93;1m')
 for i in range(random.randint(20,40)):
