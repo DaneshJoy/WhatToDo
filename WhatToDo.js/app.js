@@ -3,6 +3,7 @@ const fs = require('fs');
 const app = express();
 const port = 3000;
 const tasks_file = '../tasks.txt'
+const log_file = '../log.csv'
 
 
 app.use(express.static('public'));
@@ -42,7 +43,7 @@ app.get('/suggest', (req, res) => {
 
       // Append to log file
       const logEntry = `${now}, ${suggestion}, (js)\n`;
-      fs.appendFile('../log.txt', logEntry, (err) => {
+      fs.appendFile(log_file, logEntry, (err) => {
         if (err) {
           console.error('Error appending to log file:', err);
           return res.status(500).json({ error: 'Failed to log suggestion' });

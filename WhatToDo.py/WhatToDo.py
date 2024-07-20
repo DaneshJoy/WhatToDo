@@ -8,6 +8,7 @@ from plyer import notification
 
 
 tasks_file = '../tasks.txt'
+log_file = '../log.csv'
 
 
 def read_tasks_from_file(filename):
@@ -73,7 +74,7 @@ print('\033[0m')
 
 # subprocess.Popen(r'D:\Tools\MyStopWatch\C#\MyStopWatch\bin\Release\net7.0-windows\MyStopWatch.exe')
 
-with open('../log.txt', 'a') as f:
+with open(log_file, 'a') as f:
     f.write(datetime.now().strftime("%Y-%m-%d %H:%M:%S") + ', ' + result + ', (py)\n')
 
 notification.notify(title=f">>{result}<<", message=f"Start working on '{result}' project",
