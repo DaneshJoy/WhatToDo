@@ -2,9 +2,9 @@
   "name": "whattodo",
   "version": "1.0.0",
   "description": "",
-  "main": "server.js",
+  "main": "app.js",
   "scripts": {
-    "run": "node server.js"
+    "run": "node app.js"
   },
   "keywords": [],
   "author": "",
