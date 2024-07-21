@@ -72,10 +72,76 @@ A personal ![NodeJS](https://img.shields.io/badge/node.js-6DA55F?style=for-the-b
 
 ---
 
+## Deploy on CPanel
+
+- **Upload the content**
+
+  - Upload all files in a directory named "whattodo" in the root of the server.
+    - e.g.: /home/gamehous/whattodo
+
+- **Create a Node.js App**
+
+  - Create app using "Setup Node.js App" section and give the 
+
+  - Stop the app after creation and click on "RunNPM Install" button
+
+  - Start the app and click on "Run JS script" button, select "run" and lick on  "Run JS script"
+
+    - You should see the pm2 output
+
+  - You can use Terminal to monitor/manage your app and modules
+
+    - in the Terminal you should run the given command, which will appear on the top of the window after creating the app
+
+      - e.g. : *source /home/gamehous/nodevenv/whattodo/20/bin/activate && cd /home/gamehous/whattodo*
+
+    - You may need to install pm2 after activation of nodevenv in terminal, to be able to manage the running app:
+
+      - ```
+        npm install pm2 -g
+        ```
+
+- **Register the App**
+
+  - From the "Application Manager", create a new app.
+
+  - This will create a .htaccess file inside the whattodo directory. Add the following lines to this file:
+
+    - ```
+      RewriteEngine On
+      RewriteRule ^$ http://127.0.0.1:3000/ [P,L]
+      RewriteCond %{REQUEST_FILENAME} !-f
+      RewriteCond %{REQUEST_FILENAME} !-d
+      RewriteRule ^(.*)$ http://127.0.0.1:3000/$1 [P,L]
+      ```
+
+    - If the .htaccess file is not present, manually create it with the following content, and change paths based on your server and nodevenv:
+
+      - ```
+        # DO NOT REMOVE. CLOUDLINUX PASSENGER CONFIGURATION BEGIN
+        PassengerAppRoot "/home/gamehous/whattodo"
+        PassengerBaseURI "/whattodo"
+        PassengerNodejs "/home/gamehous/nodevenv/whattodo/20/bin/node"
+        PassengerAppType node
+        PassengerStartupFile app.js
+        # DO NOT REMOVE. CLOUDLINUX PASSENGER CONFIGURATION END
+        
+        RewriteEngine On
+        RewriteRule ^$ http://127.0.0.1:3000/ [P,L]
+        RewriteCond %{REQUEST_FILENAME} !-f
+        RewriteCond %{REQUEST_FILENAME} !-d
+        RewriteRule ^(.*)$ http://127.0.0.1:3000/$1 [P,L]
+        ```
+
+        
+
+---
+
 > to start a similar project, first initialize a node.js + express.js project
 > ```shell
 > npm init -y
 > npm install express	
+> npm install pm2 -g
 > ```
 > then, work on codes
 

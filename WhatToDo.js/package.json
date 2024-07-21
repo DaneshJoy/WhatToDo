@@ -1,10 +1,10 @@
 {
   "name": "whattodo",
   "version": "1.0.0",
-  "description": "",
-  "main": "app.js",
+  "description": "A personal Node.js and Express.js project to help me randomly choose a task to do from my pile of tasks",
+  "main": "app_cpanel.js",
   "scripts": {
-    "run": "node app.js"
+    "run": "pm2 start app_cpanel.js --name whattodo --log pm2log.txt"
   },
   "keywords": [],
   "author": "",

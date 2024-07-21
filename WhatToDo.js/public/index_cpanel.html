@@ -63,7 +63,7 @@
   <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
   <script>
     async function getSuggestion() {
-      const response = await fetch('/suggest');
+      const response = await fetch('/whattodo/suggest');
       const data = await response.json();
       document.getElementById('suggestion').style.opacity = 1;
       document.getElementById('suggestion').innerHTML = "<p class=\"h5 text-info\">Start working on</p> * <b class=\"text-primary\">" + data.suggestion + "</b> *";
@@ -80,7 +80,7 @@
 
     async function updateTodoList() {
       const todoList = document.getElementById('todo-list').value.split('\n');
-      const response = await fetch('/update', {
+      const response = await fetch('/whattodo/update', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ todoList })
@@ -98,7 +98,7 @@
     }
 
     async function loadTodoList() {
-      const response = await fetch('/todos');
+      const response = await fetch('/whattodo/todos');
       const data = await response.json();
       document.getElementById('todo-list').value = data.todoList.join('\n');
     }
