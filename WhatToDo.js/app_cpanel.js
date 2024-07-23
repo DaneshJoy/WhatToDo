@@ -79,6 +79,16 @@ app.post('/update', (req, res) => {
 
 });
 
+app.get('/log', (req, res) => {
+  fs.readFile(log_file, 'utf8', (err, data) => {
+    if (err) {
+      console.error('Error reading log file:', err);
+      return res.status(500).json({ error: 'Failed to read log file' });
+    }
+    res.json({ log: data });
+  });
+});
+
 app.listen(port, () => {
   console.log(`Server running at http://localhost:${port}`);
 });

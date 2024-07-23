@@ -43,7 +43,8 @@
 
 <body class="container">
   <h1 class="text-primary mb-4"> What To Do ? 🤔</h1>
-  <button class="btn btn-custom rounded-custom mb-3" onclick="getSuggestion()"><i class="fa fa-lightbulb-o" aria-hidden="true"></i> Suggest</button>
+  <button class="btn btn-custom rounded-custom mb-3" onclick="getSuggestion()"><i class="fa fa-lightbulb-o"
+      aria-hidden="true"></i> Suggest</button>
   <div id="suggestion" class="alert alert-primary border border-info rounded-custom" style="opacity: 0;"></div>
 
   <hr>
@@ -58,8 +59,36 @@
         <textarea id="todo-list" class="form-control" rows="10" cols="30"></textarea>
       </div>
     </div>
-    <button class="btn btn-custom rounded-custom" onclick="updateTodoList()"><i class="fa fa-check" aria-hidden="true"></i> Update List</button>
+    <button class="btn btn-custom rounded-custom" onclick="updateTodoList()"><i class="fa fa-check"
+        aria-hidden="true"></i> Update List</button>
   </div>
+
+  <hr>
+
+  <button class="btn btn-custom rounded-custom mt-4" onclick="showLog()">
+    <i class="fa fa-book" aria-hidden="true"></i> Show Log
+  </button>
+
+  <!-- Modal for displaying the log -->
+  <div class="modal fade" id="logModal" tabindex="-1" role="dialog" aria-labelledby="logModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="logModalLabel">Log</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <pre id="logContent" class="text-left"></pre>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
   <script>
     async function getSuggestion() {
@@ -68,14 +97,14 @@
       document.getElementById('suggestion').style.opacity = 1;
       document.getElementById('suggestion').innerHTML = "<p class=\"h5 text-info\">Start working on</p> * <b class=\"text-primary\">" + data.suggestion + "</b> *";
       Swal.fire({
-              position: "top",
-              icon: "success",
-              html: data.suggestion,
-              showConfirmButton: false,
-              timer: 2000,
-              timerProgressBar: true,
-              toast: false
-            });
+        position: "top",
+        icon: "success",
+        html: data.suggestion,
+        showConfirmButton: false,
+        timer: 2000,
+        timerProgressBar: true,
+        toast: false
+      });
     }
 
     async function updateTodoList() {
@@ -87,14 +116,14 @@
       });
       const data = await response.json();
       Swal.fire({
-              position: "top",
-              icon: "success",
-              html: data.message,
-              showConfirmButton: false,
-              timer: 2000,
-              timerProgressBar: true,
-              toast: false
-            });
+        position: "top",
+        icon: "success",
+        html: data.message,
+        showConfirmButton: false,
+        timer: 2000,
+        timerProgressBar: true,
+        toast: false
+      });
     }
 
     async function loadTodoList() {
@@ -115,6 +144,17 @@
         $('#eye-icon').removeClass('fa-eye-slash').addClass('fa-eye');
       });
     });
+  </script>
+
+  <script>
+    async function showLog() {
+      const response = await fetch('/whattodo/log');
+      const data = await response.json();
+
+      document.getElementById('logContent').textContent = data.log;
+
+      $('#logModal').modal('show');
+    }
   </script>
 
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
