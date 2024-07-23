@@ -49,32 +49,34 @@
 
   <hr>
 
-  <button class="btn btn-custom rounded-custom mt-4" data-toggle="collapse" data-target="#todoSection"
+  <button class="btn btn-custom rounded-custom mt-4 mx-4" data-toggle="collapse" data-target="#todoSection"
     aria-expanded="false" aria-controls="todoSection">
     <i id="eye-icon" class="fa fa-eye" aria-hidden="true"></i> Task List
+  </button>
+  <button class="btn btn-custom rounded-custom mt-4 mx-4" onclick="showLog()">
+    <i class="fa fa-list" aria-hidden="true"></i> Show Log
   </button>
   <div id="todoSection" class="collapse mt-3">
     <div class="rounded-custom d-flex justify-content-center align-items-center text-center">
       <div class="form-group">
-        <textarea id="todo-list" class="form-control" rows="10" cols="30"></textarea>
+        <textarea id="todo-list" class="form-control" rows="7" cols="20"></textarea>
       </div>
     </div>
     <button class="btn btn-custom rounded-custom" onclick="updateTodoList()"><i class="fa fa-check"
-        aria-hidden="true"></i> Update List</button>
+        aria-hidden="true"></i> Update List
+    </button>
   </div>
 
   <hr>
 
-  <button class="btn btn-custom rounded-custom mt-4" onclick="showLog()">
-    <i class="fa fa-book" aria-hidden="true"></i> Show Log
-  </button>
+
 
   <!-- Modal for displaying the log -->
   <div class="modal fade" id="logModal" tabindex="-1" role="dialog" aria-labelledby="logModalLabel" aria-hidden="true">
     <div class="modal-dialog" role="document">
       <div class="modal-content">
         <div class="modal-header">
-          <h5 class="modal-title" id="logModalLabel">Log</h5>
+          <h5 class="modal-title" id="logModalLabel">Log <sub>(</sub><sub id="numLines" class="text-primary"></sub> <sub>items)</sub></h5>
           <button type="button" class="close" data-dismiss="modal" aria-label="Close">
             <span aria-hidden="true">&times;</span>
           </button>
@@ -91,8 +93,9 @@
 
   <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
   <script>
+    const root_path = "/whattodo/"
     async function getSuggestion() {
-      const response = await fetch('/whattodo/suggest');
+      const response = await fetch(root_path + 'suggest');
       const data = await response.json();
       document.getElementById('suggestion').style.opacity = 1;
       document.getElementById('suggestion').innerHTML = "<p class=\"h5 text-info\">Start working on</p> * <b class=\"text-primary\">" + data.suggestion + "</b> *";
@@ -109,7 +112,7 @@
 
     async function updateTodoList() {
       const todoList = document.getElementById('todo-list').value.split('\n');
-      const response = await fetch('/whattodo/update', {
+      const response = await fetch(root_path + 'update', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ todoList })
@@ -127,7 +130,7 @@
     }
 
     async function loadTodoList() {
-      const response = await fetch('/whattodo/todos');
+      const response = await fetch(root_path + 'todos');
       const data = await response.json();
       document.getElementById('todo-list').value = data.todoList.join('\n');
     }
@@ -148,10 +151,24 @@
 
   <script>
     async function showLog() {
-      const response = await fetch('/whattodo/log');
+      const response = await fetch(root_path + 'log');
       const data = await response.json();
 
+      var lines = data.log.split('\n')                    // Split the content into lines
+        .filter(line => line.trim() !== '');              // Filter out empty lines or lines with only whitespace
+
+      var numberOfLines = lines.length;                   // Get the number of non-empty lines
+
+      var data_bulletpoint = lines
+        .map(line => `• ${line}`)              // Add a bullet point before each remaining line
+        .join('\n');                           // Join the lines back together with newlines
+
+      var data_numbered = lines
+        .map((line, index) => `${index + 1}. ${line}`) // Add a number before each remaining line
+        .join('\n');                           // Join the lines back together with newlines
+
       document.getElementById('logContent').textContent = data.log;
+      document.getElementById('numLines').textContent = numberOfLines;
 
       $('#logModal').modal('show');
     }

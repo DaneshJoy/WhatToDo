@@ -5,7 +5,6 @@ const port = 3000;
 const tasks_file = 'tasks.txt'
 const log_file = 'log.csv'
 
-
 app.use(express.static('public'));
 app.use(express.json());
 
