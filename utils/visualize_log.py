@@ -26,7 +26,7 @@ import matplotlib.pyplot as plt
 
 # Read the CSV file
 LOG_FILE = '../log.csv'
-log_df = pd.read_csv(LOG_FILE, header=None, names=['Date', 'Task', 'App'])
+log_df = pd.read_csv(LOG_FILE)
 
 # Convert the Date column to datetime
 log_df['Date'] = pd.to_datetime(log_df['Date'])

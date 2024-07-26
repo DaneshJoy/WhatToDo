@@ -32,6 +32,12 @@ for (let i = 0; i < 10; i++) {
 }
 
 app.get('/suggest', (req, res) => {
+  // Check if the file exists
+  if (!fs.existsSync(log_file)) {
+    // Create the file and write the header
+    fs.writeFileSync(log_file, 'Date,Task,App\n', 'utf8');
+  }
+
   const randomIndex = Math.floor(Math.random() * works.length);
   const suggestion = works[randomIndex];
 
@@ -42,7 +48,7 @@ app.get('/suggest', (req, res) => {
       const now = dateFormat(new Date(), "yyyy-mm-dd HH:MM:ss");
 
       // Append to log file
-      const logEntry = `${now}, ${suggestion}, (js)\n`;
+      const logEntry = `${now},${suggestion},(js)\n`;
       fs.appendFile(log_file, logEntry, (err) => {
         if (err) {
           console.error('Error appending to log file:', err);
