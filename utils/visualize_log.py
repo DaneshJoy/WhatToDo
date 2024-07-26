@@ -1,3 +1,4 @@
+#!/home/saeed/anaconda3/bin/python
 """
 This script reads a log CSV file containing date, task, and app information.
 It processes the data by converting the Date column to datetime, setting the Date column as the index,
