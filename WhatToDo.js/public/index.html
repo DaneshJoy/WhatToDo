@@ -76,13 +76,19 @@
     <div class="modal-dialog" role="document">
       <div class="modal-content">
         <div class="modal-header">
-          <h5 class="modal-title" id="logModalLabel">Log <sub>(</sub><sub id="numLines" class="text-primary"></sub> <sub>items)</sub></h5>
+          <h5 class="modal-title" id="logModalLabel">Log <sub>(</sub><sub id="numLines" class="text-primary"></sub>
+            <sub>items)</sub></h5>
           <button type="button" class="close" data-dismiss="modal" aria-label="Close">
             <span aria-hidden="true">&times;</span>
           </button>
         </div>
         <div class="modal-body">
-          <pre id="logContent" class="text-left"></pre>
+          <table class="table table-striped">
+            <thead>
+              <tr id="logHeader"></tr>
+            </thead>
+            <tbody id="logContent"></tbody>
+          </table>
         </div>
         <div class="modal-footer">
           <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
@@ -159,16 +165,34 @@
 
       var numberOfLines = lines.length;                   // Get the number of non-empty lines
 
-      var data_bulletpoint = lines
-        .map(line => `• ${line}`)              // Add a bullet point before each remaining line
-        .join('\n');                           // Join the lines back together with newlines
+      var logHeader = document.getElementById('logHeader');
+      var logContent = document.getElementById('logContent');
 
-      var data_numbered = lines
-        .map((line, index) => `${index + 1}. ${line}`) // Add a number before each remaining line
-        .join('\n');                           // Join the lines back together with newlines
+      // Clear previous content
+      logHeader.innerHTML = '';
+      logContent.innerHTML = '';
 
-      document.getElementById('logContent').textContent = data.log;
-      document.getElementById('numLines').textContent = numberOfLines;
+      // Process header row
+      var headers = lines[0].split(',');                  // Split header row by comma
+      headers.forEach(header => {
+        var th = document.createElement('th');
+        th.textContent = header.trim();
+        logHeader.appendChild(th);
+      });
+
+      // Process data rows
+      lines.slice(1).forEach(line => {
+        var tr = document.createElement('tr');
+        var items = line.split(',');
+        items.forEach(item => {
+          var td = document.createElement('td');
+          td.textContent = item.trim();
+          tr.appendChild(td);
+        });
+        logContent.appendChild(tr);
+      });
+
+      document.getElementById('numLines').textContent = numberOfLines - 1; // Exclude header from count
 
       $('#logModal').modal('show');
     }
