@@ -21,6 +21,7 @@
 
     #todo-list {
       margin-top: 20px;
+      text-align: left;
     }
 
     .btn-custom {
@@ -56,10 +57,21 @@
   <button class="btn btn-custom rounded-custom mt-4 mx-4" onclick="showLog()">
     <i class="fa fa-list" aria-hidden="true"></i> Show Log
   </button>
-  <div id="todoSection" class="collapse mt-3">
+  <!-- <div id="todoSection" class="collapse mt-3">
     <div class="rounded-custom d-flex justify-content-center align-items-center text-center">
       <div class="form-group">
         <textarea id="todo-list" class="form-control" rows="7" cols="20"></textarea>
+      </div>
+    </div>
+    <button class="btn btn-custom rounded-custom" onclick="updateTodoList()"><i class="fa fa-check"
+        aria-hidden="true"></i> Update List
+    </button>
+  </div> -->
+
+  <div id="todoSection" class="collapse mt-3">
+    <div class="rounded-custom d-flex justify-content-center">
+      <div id="todo-list" class="form-group">
+        <!-- Checkbox list will be generated here -->
       </div>
     </div>
     <button class="btn btn-custom rounded-custom" onclick="updateTodoList()"><i class="fa fa-check"
@@ -77,7 +89,8 @@
       <div class="modal-content">
         <div class="modal-header">
           <h5 class="modal-title" id="logModalLabel">Log <sub>(</sub><sub id="numLines" class="text-primary"></sub>
-            <sub>items)</sub></h5>
+            <sub>items)</sub>
+          </h5>
           <button type="button" class="close" data-dismiss="modal" aria-label="Close">
             <span aria-hidden="true">&times;</span>
           </button>
@@ -116,13 +129,69 @@
       });
     }
 
+    // async function updateTodoList() {
+    //   const todoList = document.getElementById('todo-list').value.split('\n');
+    //   const response = await fetch(root_path + 'update', {
+    //     method: 'POST',
+    //     headers: { 'Content-Type': 'application/json' },
+    //     body: JSON.stringify({ todoList })
+    //   });
+    //   const data = await response.json();
+    //   Swal.fire({
+    //     position: "top",
+    //     icon: "success",
+    //     html: data.message,
+    //     showConfirmButton: false,
+    //     timer: 2000,
+    //     timerProgressBar: true,
+    //     toast: false
+    //   });
+    // }
+
+    // async function loadTodoList() {
+    //   const response = await fetch(root_path + 'todos');
+    //   const data = await response.json();
+    //   document.getElementById('todo-list').value = data.todoList.join('\n');
+    // }
+
+    async function loadTodoList() {
+      const response = await fetch(root_path + 'todos');
+      const data = await response.json();
+
+      const todoListContainer = document.getElementById('todo-list');
+      todoListContainer.innerHTML = ''; // Clear any existing content
+
+      data.todoList.forEach((task, index) => {
+        const checkbox = document.createElement('input');
+        checkbox.type = 'checkbox';
+        checkbox.id = `task-${index}`;
+        checkbox.value = task;
+        checkbox.checked = true;
+        checkbox.className = 'task-checkbox';
+
+        const label = document.createElement('label');
+        label.htmlFor = `task-${index}`;
+        label.textContent = task;
+        label.style.marginLeft = '8px';
+
+        const div = document.createElement('div');
+        div.className = 'form-check';
+        div.appendChild(checkbox);
+        div.appendChild(label);
+
+        todoListContainer.appendChild(div);
+      });
+    }
+
     async function updateTodoList() {
-      const todoList = document.getElementById('todo-list').value.split('\n');
+      const checkedTasks = Array.from(document.querySelectorAll('.task-checkbox:checked')).map(checkbox => checkbox.value);
+
       const response = await fetch(root_path + 'update', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ todoList })
+        body: JSON.stringify({ todoList: checkedTasks })
       });
+
       const data = await response.json();
       Swal.fire({
         position: "top",
@@ -133,12 +202,6 @@
         timerProgressBar: true,
         toast: false
       });
-    }
-
-    async function loadTodoList() {
-      const response = await fetch(root_path + 'todos');
-      const data = await response.json();
-      document.getElementById('todo-list').value = data.todoList.join('\n');
     }
 
     document.addEventListener('DOMContentLoaded', loadTodoList);
