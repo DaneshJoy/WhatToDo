@@ -39,7 +39,7 @@ task_app_counts = log_df.groupby(['Task', 'App']).size().unstack(fill_value=0)
 
 # Plot the data
 task_app_counts.plot(kind='barh', stacked=True, figsize=(
-    10, 6), color=['#95D2B3', '#55AD9B'])
+    10, 5), color=['#95D2B3', '#55AD9B'], width=0.5)
 plt.xlabel('Task')
 plt.ylabel('Number of Occurrences')
 plt.title('Occurrences of Each Task by App')

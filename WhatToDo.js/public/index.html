@@ -7,6 +7,8 @@
   <title>WhatToDo</title>
   <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
   <script src="https://kit.fontawesome.com/42d5adcbca.js" crossorigin="anonymous"></script>
+  <!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.min.js"></script> -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <style>
     body {
       font-family: Arial, sans-serif;
@@ -45,28 +47,17 @@
 <body class="container">
   <h1 class="text-primary mb-4"> What To Do ? 🤔</h1>
   <button class="btn btn-custom rounded-custom mb-3" onclick="getSuggestion()"><i class="fa fa-lightbulb-o"
-      aria-hidden="true"></i> Suggest</button>
+      aria-hidden="true"></i>💡 Suggest</button>
   <div id="suggestion" class="alert alert-primary border border-info rounded-custom" style="opacity: 0;"></div>
 
   <hr>
 
+  <button class="btn btn-custom rounded-custom mt-4 mx-4" id="loadChart">📊 Show Chart</button>
+  <button class="btn btn-custom rounded-custom mt-4 mx-4" onclick="showLog()">📃 Show Log</button>
   <button class="btn btn-custom rounded-custom mt-4 mx-4" data-toggle="collapse" data-target="#todoSection"
-    aria-expanded="false" aria-controls="todoSection">
-    <i id="eye-icon" class="fa fa-eye" aria-hidden="true"></i> Task List
+    aria-expanded="false" aria-controls="todoSection">📋 Task List
   </button>
-  <button class="btn btn-custom rounded-custom mt-4 mx-4" onclick="showLog()">
-    <i class="fa fa-list" aria-hidden="true"></i> Show Log
-  </button>
-  <!-- <div id="todoSection" class="collapse mt-3">
-    <div class="rounded-custom d-flex justify-content-center align-items-center text-center">
-      <div class="form-group">
-        <textarea id="todo-list" class="form-control" rows="7" cols="20"></textarea>
-      </div>
-    </div>
-    <button class="btn btn-custom rounded-custom" onclick="updateTodoList()"><i class="fa fa-check"
-        aria-hidden="true"></i> Update List
-    </button>
-  </div> -->
+
 
   <div id="todoSection" class="collapse mt-3">
     <div class="rounded-custom d-flex justify-content-center">
@@ -74,14 +65,32 @@
         <!-- Checkbox list will be generated here -->
       </div>
     </div>
-    <button class="btn btn-custom rounded-custom" onclick="updateTodoList()"><i class="fa fa-check"
-        aria-hidden="true"></i> Update List
+    <button class="btn btn-custom rounded-custom" onclick="updateTodoList()">☑ Update List
     </button>
   </div>
 
   <hr>
 
-
+  <!-- Modal for displaying the chart -->
+  <div class="modal fade" id="chartModal" tabindex="-1" role="dialog" aria-labelledby="chartModalLabel"
+    aria-hidden="true">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="chartModalLabel">Occurrences of Each Task by App</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <canvas id="modalChart" width="400" height="200"></canvas>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+        </div>
+      </div>
+    </div>
+  </div>
 
   <!-- Modal for displaying the log -->
   <div class="modal fade" id="logModal" tabindex="-1" role="dialog" aria-labelledby="logModalLabel" aria-hidden="true">
@@ -260,6 +269,98 @@
       $('#logModal').modal('show');
     }
   </script>
+
+  <script>
+    document.getElementById('loadChart').addEventListener('click', () => {
+      fetch('/chart-data')
+        .then(response => response.json())
+        .then(data => {
+          const labels = Object.keys(data);
+          const datasets = [];
+          const apps = new Set();
+
+          // Collect all unique apps
+          labels.forEach(task => {
+            Object.keys(data[task]).forEach(app => apps.add(app));
+          });
+
+          // Define colors for different apps
+          const appColors = {
+            '(js)': [
+              'rgba(255, 99, 132, 0.2)',
+              'rgba(255, 159, 64, 0.2)',
+              'rgba(255, 205, 86, 0.2)',
+              'rgba(75, 192, 192, 0.2)',
+              'rgba(54, 162, 235, 0.2)',
+              'rgba(153, 102, 255, 0.2)',
+              'rgba(101, 103, 227, 0.2)'
+            ], // Color for "js" part
+            '(py)': [
+              'rgb(255, 99, 132, 0.7)',
+              'rgb(255, 159, 64, 0.7)',
+              'rgb(255, 205, 86, 0.7)',
+              'rgb(75, 192, 192, 0.7)',
+              'rgb(54, 162, 235, 0.7)',
+              'rgb(153, 102, 255, 0.7)',
+              'rgb(101, 103, 227, 0.7)'
+            ]  // Color for "py" part
+          };
+
+          // Prepare datasets for Chart.js
+          apps.forEach(app => {
+            const dataForApp = labels.map(task => data[task][app] || 0);
+
+            datasets.push({
+              label: app,
+              data: dataForApp,
+              backgroundColor: appColors[app],
+              stack: 'Stack 0',
+              fill: false,
+              borderColor: [
+                'rgb(255, 99, 132)',
+                'rgb(255, 159, 64)',
+                'rgb(255, 205, 86)',
+                'rgb(75, 192, 192)',
+                'rgb(54, 162, 235)',
+                'rgb(153, 102, 255)',
+                'rgb(101, 103, 227)'
+              ],
+              borderWidth: 1
+            });
+          });
+
+          // Show the modal
+          $('#chartModal').modal('show');
+
+          // Create the chart inside the modal
+          const ctx = document.getElementById('modalChart').getContext('2d');
+          new Chart(ctx, {
+            type: 'bar',
+            data: {
+              labels: labels,
+              datasets: datasets
+            },
+            options: {
+              responsive: true,
+              indexAxis: 'y',
+              scales: {
+                xAxes: [{
+                  stacked: true,
+                }],
+                yAxes: [{
+                  stacked: true
+                }]
+              },
+              title: {
+                display: true,
+                text: 'Occurrences of Each Task by App'
+              }
+            }
+          });
+        });
+    });
+  </script>
+
 
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.11.0/umd/popper.min.js"></script>

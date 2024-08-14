@@ -1,5 +1,6 @@
 const express = require('express');
 const fs = require('fs');
+const csv = require('csv-parser');
 const app = express();
 const port = 3000;
 const tasks_file = '../tasks.txt'
@@ -137,4 +138,33 @@ app.get('/log', (req, res) => {
 
 app.listen(port, () => {
   console.log(`Server running at http://localhost:${port}`);
+});
+
+app.get('/chart-data', (req, res) => {
+  const results = [];
+
+  fs.createReadStream(log_file)
+      .pipe(csv())
+      .on('data', (data) => results.push(data))
+      .on('end', () => {
+          // Process the CSV data similar to what was done in Python
+          const taskAppCounts = {};
+
+          results.forEach(row => {
+              const task = row['Task'];
+              const app = row['App'];
+
+              if (!taskAppCounts[task]) {
+                  taskAppCounts[task] = {};
+              }
+
+              if (!taskAppCounts[task][app]) {
+                  taskAppCounts[task][app] = 0;
+              }
+
+              taskAppCounts[task][app]++;
+          });
+
+          res.json(taskAppCounts); // Send the processed data to the client
+      });
 });
